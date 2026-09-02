@@ -2,7 +2,7 @@
 
 from typing import Tuple
 import numpy as np
-
+from numpy.typing import NDArray
 
 class LinearRegressor:
     """Single-variable Linear Regression optimized via Gradient Descent.
@@ -20,7 +20,7 @@ class LinearRegressor:
         self.learning_rate: float = learning_rate
         self.b: float = 0.0  # y-intercept
         self.m: float = 0.0  # slope
-
+        self.cost_history: list[float] = []  # Store loss values here
     def predict(self, x: np.ndarray) -> np.ndarray:
         """Computes predicted output y_hat for input array x.
 
@@ -32,7 +32,7 @@ class LinearRegressor:
         """
         return self.m * x + self.b
 
-    def compute_error(self, points: np.ndarray) -> float:
+    def compute_error(self, points: NDArray[np.float64]) -> float:
         """Calculates Mean Squared Error (MSE) over the dataset.
 
         Formula:
@@ -45,15 +45,13 @@ class LinearRegressor:
         Returns:
             float: Calculated Mean Squared Error loss.
         """
-        x: np.ndarray = points[:, 0]
-        y: np.ndarray = points[:, 1]
-        
-        predictions: np.ndarray = self.predict(x)
-        errors: np.ndarray = y - predictions
-        
+        x: NDArray[np.float64] = points[:, 0]
+        y: NDArray[np.float64] = points[:, 1]
+        predictions = self.predict(x)
+        errors = y - predictions
         return float(np.mean(errors ** 2))
 
-    def step_gradient(self, points: np.ndarray) -> None:
+    def step_gradient(self, points: NDArray[np.float64]) -> None:
         """Executes a single parameter update step using partial derivatives.
 
         Partial Derivatives w.r.t b and m:
@@ -63,22 +61,22 @@ class LinearRegressor:
         Args:
             points (np.ndarray): 2D array of shape (N, 2) containing feature/target data.
         """
-        x: np.ndarray = points[:, 0]
-        y: np.ndarray = points[:, 1]
-        n: float = float(len(points))
+        x: NDArray[np.float64] = points[:, 0]
+        y: NDArray[np.float64] = points[:, 1]
+        N = float(len(points))
 
         # Vectorized calculation of prediction errors
-        errors: np.ndarray = y - self.predict(x)
+        errors = y - self.predict(x)
 
         # Gradient computations
-        b_gradient: float = float(-(2.0 / n) * np.sum(errors))
-        m_gradient: float = float(-(2.0 / n) * np.sum(x * errors))
+        b_gradient = -2/N * float(np.sum(errors))
+        m_gradient = -2/N * float(np.sum(x * errors))
 
         # Gradient descent parameter updates
         self.b -= self.learning_rate * b_gradient
         self.m -= self.learning_rate * m_gradient
 
-    def fit(self, points: np.ndarray, num_iterations: int = 1000) -> Tuple[float, float]:
+    def fit(self, points: NDArray[np.float64], num_iterations: int = 1000) -> Tuple[float, float]:
         """Runs the complete gradient descent optimization loop.
 
         Args:
@@ -88,7 +86,12 @@ class LinearRegressor:
         Returns:
             Tuple[float, float]: Converged parameter pair (intercept b, slope m).
         """
+        self.cost_history = []  # Reset history prior to fitting
         for _ in range(num_iterations):
-            self.step_gradient(points)
-        
-        return self.b, self.m
+            # Track cost before/after the gradient step
+            current_cost = self.compute_error(points)
+            self.cost_history.append(current_cost)
+                    
+            self.step_gradient(points)  
+                    
+        return self.m, self.b
