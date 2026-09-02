@@ -71,16 +71,20 @@ $$m \leftarrow m - \alpha \cdot \frac{\partial E}{\partial m}$$
 linear-regression-from-scratch/
 │
 ├── data/
-│   └── data.csv               # Student test score dataset
+│   └── data.csv                # Student test score dataset
 ├── notebooks/
 │   └── linear_regression.ipynb # Interactive tutorial & visual walkthrough
 ├── src/
 │   ├── __init__.py
-│   ├── model.py               # Clean, documented LinearRegressor class
-│   └── visualize.py           # Plotting loss curves & decision boundaries
+│   ├── model.py                # Clean, documented LinearRegressor class
+│   └── visualize.py            # Plotting loss curves & decision boundaries
 ├── tests/
-│   └── test_model.py          # Unit tests verifying gradient descent convergence
-├── main.py                    # Entry point execution script
-├── requirements.txt           # Project dependencies
-├── LICENSE                    # MIT License
-└── README.md                  # Detailed learning guide
+│   ├── test_model.py  
+│   ├── __init__.py             
+│   ├── generate_test_data.py   # Generates test data for unit testing
+│   ├── test_model.py           # Unit tests verifying gradient descent convergence
+├── main.py                     # Entry point execution script
+├── requirements.txt            # Project dependencies
+├── LICENSE                     # MIT License
+├── LESSONS_LEARNT              # Covers knowledge and tidbits gained 
+└── README.md                   # Detailed learning guide
