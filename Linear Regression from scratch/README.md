@@ -1,9 +1,8 @@
-```markdown
 # Linear Regression from Scratch: A Mathematical & Practical Guide
 
-[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Dependencies](https://img.shields.io/badge/Dependencies-NumPy%20%7C%20Matplotlib-orange.svg)]()
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+![Dependencies](https://img.shields.io/badge/Dependencies-NumPy%20%7C%20Matplotlib-orange.svg)
 
 A modern, refactored, and pedagogical implementation of **Linear Regression using Gradient Descent from Scratch in Python**. 
 
@@ -79,12 +78,11 @@ linear-regression-from-scratch/
 │   ├── model.py                # Clean, documented LinearRegressor class
 │   └── visualize.py            # Plotting loss curves & decision boundaries
 ├── tests/
-│   ├── test_model.py  
-│   ├── __init__.py             
+│   ├── __init__.py
 │   ├── generate_test_data.py   # Generates test data for unit testing
-│   ├── test_model.py           # Unit tests verifying gradient descent convergence
+│   └── test_model.py           # Unit tests verifying gradient descent convergence
 ├── main.py                     # Entry point execution script
 ├── requirements.txt            # Project dependencies
 ├── LICENSE                     # MIT License
-├── LESSONS_LEARNT              # Covers knowledge and tidbits gained 
+├── LESSONS_LEARNT.md           # Covers knowledge and tidbits gained 
 └── README.md                   # Detailed learning guide
