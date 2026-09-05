@@ -1,0 +1,16 @@
+# Byte-compiled / Python caches
+__pycache__/
+*.pyc
+
+# Environments
+.venv/
+env/
+venv/
+
+# PyTorch / YOLO model weights & training runs
+*.pt
+runs/
+
+# IDE / OS files
+.DS_Store
+.vscode/
