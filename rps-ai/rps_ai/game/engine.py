@@ -1,5 +1,3 @@
-# rps_ai/game/engine.py
-
 import time
 from enum import Enum
 from rps_ai.game.predictor import HumanBehaviorPredictor
@@ -47,19 +45,15 @@ class GameEngine:
         return (self.correct_predictions / self.total_predictions) * 100.0
 
     def start_round(self):
-        """Starts round, predicts player gesture, and locks AI move."""
+        """Starts round, predicts player gesture, and locks AI move ONCE."""
         if self.state in [GameState.WAITING, GameState.SHOW_RESULT]:
             self.state = GameState.COUNTDOWN
             self.start_time = time.time()
             self.timer_val = int(self.countdown_duration)
 
-            # Record predicted human move & AI counter-move
-            if hasattr(self.predictor, "_predict_player_move"):
-                self.predicted_player_move = self.predictor._predict_player_move()
-            else:
-                self.predicted_player_move = "ROCK"
-
-            self.ai_move = self.predictor.COUNTER_MOVES[self.predicted_player_move]
+            # Lock AI move and derive predicted move from predictor state
+            self.ai_move = self.predictor.predict_ai_move()
+            self.predicted_player_move = self.predictor.BEATEN_BY[self.ai_move]
 
     def update(self, current_gesture: str):
         """Updates round timer state machine."""
@@ -77,16 +71,17 @@ class GameEngine:
                 self.state = GameState.WAITING
 
     def _evaluate_round(self, player_gesture: str):
-        """Calculates round winner and records stats."""
+        """Calculates round winner and records valid moves ONCE when round finishes."""
         self.player_move = player_gesture
         self.state = GameState.SHOW_RESULT
         self.start_time = time.time()
 
+        # Ignore invalid/missing gesture detections
         if self.player_move not in ["ROCK", "PAPER", "SCISSORS"]:
             self.round_result = "NO GESTURE DETECTED!"
             return
 
-        # Record accuracy metrics
+        # Record AI Accuracy tracking metrics
         was_correct = (self.predicted_player_move == self.player_move)
         self.total_predictions += 1
         if was_correct:
@@ -99,7 +94,7 @@ class GameEngine:
             "correct": was_correct
         })
 
-        # Win condition check
+        # Win condition evaluation
         if self.player_move == self.ai_move:
             self.round_result = "DRAW!"
             result_for_history = "DRAW"
@@ -116,7 +111,7 @@ class GameEngine:
             self.ai_score += 1
             result_for_history = "AI WINS!"
 
-        # Train Markov predictor on round outcome
+        # Train predictor only when a valid gesture was thrown
         self.predictor.record_round(self.player_move, self.ai_move, result_for_history)
 
     def reset_scores(self) -> None:
