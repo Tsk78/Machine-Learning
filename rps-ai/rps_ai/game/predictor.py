@@ -36,23 +36,26 @@ class HumanBehaviorPredictor:
             prev_pair = (self.move_history[-3], self.move_history[-2])
             self.history_matrix[prev_pair][player_move] += 1
 
-    def predict_ai_move(self) -> str:
-        """Predicts the player's next move BEFORE countdown ends, then returns the counter."""
-        # 1. Fallback for initial rounds: apply Win-Stay, Lose-Shift heuristic
+    def _predict_player_move(self) -> str:
+        """Determines what move the AI expects the human to throw next."""
+        # Fallback for initial rounds: apply Win-Stay, Lose-Shift heuristic
         if len(self.move_history) < 3:
-            predicted_player_move = self._predict_by_psychology()
-        else:
-            # 2. Markov Chain sequence prediction
-            prev_pair = (self.move_history[-2], self.move_history[-1])
-            counts = self.history_matrix[prev_pair]
-            
-            total_observations = sum(counts.values())
-            if total_observations > 0:
-                predicted_player_move = max(counts, key=lambda k: counts[k])
-            else:
-                predicted_player_move = self._predict_by_psychology()
+            return self._predict_by_psychology()
 
-        # Return the winning counter to the predicted move
+        # Markov Chain sequence prediction
+        prev_pair = (self.move_history[-2], self.move_history[-1])
+        counts = self.history_matrix[prev_pair]
+
+        total_observations = sum(counts.values())
+        if total_observations > 0:
+            # Use lambda to avoid Pylance type issues with dict.get
+            return max(counts, key=lambda k: counts[k])
+        else:
+            return self._predict_by_psychology()
+
+    def predict_ai_move(self) -> str:
+        """Returns the winning counter-move to the predicted player gesture."""
+        predicted_player_move = self._predict_player_move()
         return self.COUNTER_MOVES[predicted_player_move]
 
     def _predict_by_psychology(self) -> str:
